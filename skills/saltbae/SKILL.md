@@ -90,6 +90,7 @@ They may live in subdirectories (e.g. `rust/package.json`). List every file foun
 - If no version-bearing manifest file is found at all, derive the current version from the latest git tag: `git describe --tags --abbrev=0` (strip a leading `v` for the numeric version). If there is also no tag, stop and ask the user for the current version.
 - Compute the new version. **Patch increment is purely numeric** — `0.4.9` → `0.4.10`, NOT `0.5.0`. MINOR and MAJOR never change on auto-increment.
 - Validate semver format (MAJOR.MINOR.PATCH). Print the transition (e.g., `0.3.14 → 0.3.15`).
+- Record `PREV_TAG` for step 8's release notes: the tag `v{OLD_VERSION}`, if it exists (`git rev-parse -q --verify v{OLD_VERSION}`). If it doesn't exist, this is the first release — there is no `PREV_TAG`, and step 8 covers full history instead.
 
 ### 2. Build / check (before version update)
 
@@ -128,10 +129,20 @@ chore: bump version to {VERSION}
 git tag -a v{VERSION} -m "v{VERSION}"
 ```
 
-### 8. Done
+### 8. Generate release notes
+
+For pasting into the GitHub Releases text field when publishing this tag — this is manual copy-paste, not something the skill posts anywhere, so just print it as part of step 9's output.
+
+- Range: `PREV_TAG..HEAD` (from step 1), excluding this bump commit itself — its `chore: bump version to {VERSION}` message is boilerplate, not a release note. If there's no `PREV_TAG` (first release), cover full history instead and label it "Initial release".
+- `git log PREV_TAG..HEAD --oneline` lists the raw candidates. For each, read the subject (and body when the subject alone doesn't convey the user-facing effect) and write ONE concise bullet describing what changed — same what/why spirit as step 4's commit-message rules: no *how*, no verification-transcript detail. Merge commits into a single bullet when they're trivially the same logical change (e.g. a fix immediately following what it fixes).
+- Group under `### Features` / `### Fixes` / `### Docs` etc. only if the repo's own commits consistently use matching prefixes (step 2c already established this); otherwise a flat bullet list.
+- Output as plain Markdown (`- ...`), ready to paste as-is — no surrounding commentary.
+
+### 9. Done
 
 Print a summary:
 - Old version → new version
 - Files updated
 - Commit hash (short) and tag name
+- The release notes from step 8, clearly delimited (e.g. a fenced block) so they're easy to copy into GitHub's release notes text field for this tag
 - Remind the user to `git push && git push --tags` when ready.
