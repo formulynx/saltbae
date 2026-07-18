@@ -26,6 +26,32 @@ change is legible to someone else): the programmer's job is the former,
 `saltbae`'s is the latter — carving and seasoning the working tree into a
 change history worth serving.
 
+## Usage
+
+Inside a Claude Code session, invoke:
+
+```
+/saltbae
+```
+
+**Sift mode** (no arguments): organizes your current uncommitted changes
+into one or more logical commits.
+
+```
+/saltbae bump
+/saltbae bump 4.2.1
+```
+
+**Bump mode**: sifts first, then bumps the project version (auto-incrementing
+the patch number, or to the version given explicitly), runs the
+build/checks, updates version references across the repo, commits, and tags
+the release.
+
+A notable behavior in both modes: commits created by this skill never
+contain any AI-attribution string (no `Co-Authored-By: Claude ...`, no
+"Generated with Claude Code", no mention of Anthropic/Claude/AI) — this rule
+overrides any default trailer behavior.
+
 ## Install
 
 Pick the installer for your shell:
@@ -99,32 +125,6 @@ variables. To inspect before running, download first: `irm <same-url>
 
 If PowerShell blocks the script with an execution-policy error, run it for the
 current process only: `powershell -ExecutionPolicy Bypass -File .\install.ps1`.
-
-## Usage
-
-Inside a Claude Code session, invoke:
-
-```
-/saltbae
-```
-
-**Sift mode** (no arguments): organizes your current uncommitted changes
-into one or more logical commits.
-
-```
-/saltbae bump
-/saltbae bump 4.2.1
-```
-
-**Bump mode**: sifts first, then bumps the project version (auto-incrementing
-the patch number, or to the version given explicitly), runs the
-build/checks, updates version references across the repo, commits, and tags
-the release.
-
-A notable behavior in both modes: commits created by this skill never
-contain any AI-attribution string (no `Co-Authored-By: Claude ...`, no
-"Generated with Claude Code", no mention of Anthropic/Claude/AI) — this rule
-overrides any default trailer behavior.
 
 ## Update
 
