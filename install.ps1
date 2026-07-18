@@ -20,7 +20,7 @@ $ErrorActionPreference = 'Stop'
 
 $Owner   = 'formulynx'
 $Repo    = 'saltbae'
-$Ref     = if ($env:SALTBAE_REF)      { $env:SALTBAE_REF }      else { 'v0.1.0' }
+$Ref     = if ($env:SALTBAE_REF)      { $env:SALTBAE_REF }      else { 'v0.1.1' }
 $BaseUrl = if ($env:SALTBAE_BASE_URL) { $env:SALTBAE_BASE_URL } else { "https://cdn.jsdelivr.net/gh/$Owner/$Repo@$Ref" }
 
 $ClaudeDir = if ($env:CLAUDE_DIR) { $env:CLAUDE_DIR } else { Join-Path $HOME '.claude' }
