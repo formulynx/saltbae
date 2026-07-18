@@ -58,6 +58,12 @@ If no `.planning/`, or it doesn't explain the changes, look for other design/imp
 
 Stage and commit each group in order. Use `git add <specific paths>` — never `git add -A` when splitting.
 
+**Write the message like a human maintainer would, not a phase-completion report:**
+- **Subject**: imperative mood, ≤50 chars where possible (72 is a hard ceiling), no trailing period — the *what*, at a glance.
+- **Body** (only if the subject doesn't already cover the *why*): blank line, then wrapped ~72 cols. State what changed and why it was needed. Never narrate *how* step-by-step, and never re-derive detail the diff already shows. A handful of bullets is normal; past ~15 lines you have drifted into writing a report, not a commit — cut it back to the essential why.
+- Leave out of the message entirely: verification transcripts (test/build output, pass/fail counts, command invocations), exhaustive file-by-file listings (`git show --stat` recovers this on demand), edge-case-by-edge-case narration, and deferred-work rationale — none of it survives usefully in `git log`. If the project is GSD-managed, that detail already belongs in `.planning/phases/<phase>/SUMMARY*.md` or its PROGRESS csv/log — reference it (`see SUMMARY.md`) instead of re-narrating it in the commit body.
+- Matching the repo's existing style (prefix conventions, language) from step 2c is about *form*, not license to expand length or content beyond the rules above.
+
 ### 5. Report
 
 Print a short summary: commits created (hash, message, files) and anything intentionally left uncommitted (with reason).
