@@ -13,6 +13,19 @@ This repo is distributed as a plain skill file, installed via a symlink —
 there is no plugin manifest, so the command stays available as the bare
 `/saltbae`.
 
+## Why "saltbae"?
+
+The name nods to the meme-famous steakhouse chef known online as "Salt
+Bae" — celebrated for a dramatic tableside cut and a theatrical sprinkle of
+salt from on high before serving. However good the meat, without a proper
+cut (splitting the diff into logical commits) and deliberate seasoning (a
+commit log that reads clearly) the diner can't really chew it — literally —
+or taste it, i.e. review it. Cooking the meat itself (whether the code
+works) is a different skill from plating it for the guest (whether the
+change is legible to someone else): the programmer's job is the former,
+`saltbae`'s is the latter — carving and seasoning the working tree into a
+change history worth serving.
+
 ## Install
 
 Pick the installer for your shell:
