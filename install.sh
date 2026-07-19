@@ -12,7 +12,7 @@ set -euo pipefail
 
 OWNER=formulynx
 REPO=saltbae
-REF="${SALTBAE_REF:-v0.1.1}"
+REF="${SALTBAE_REF:-v0.1.2}"
 BASE_URL="${SALTBAE_BASE_URL:-https://cdn.jsdelivr.net/gh/$OWNER/$REPO@$REF}"
 
 main() {
