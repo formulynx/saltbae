@@ -50,6 +50,8 @@ If no `.planning/`, or it doesn't explain the changes, look for other design/imp
 
 - Group related changes into logical units. Changes spanning multiple features/fixes → separate commits.
 - A commit should be one reviewable unit: a feature, a fix, a refactor, a docs update — not a mixture.
+- Split so that each commit maps to exactly ONE release-note category (see Part 2 step 8): Added / Changed / Fixed / Removed / Performance / Documentation / Security. A change that both adds a feature and fixes a bug → two commits.
+  - **Exception**: if splitting would leave an intermediate commit that doesn't build/type-check (e.g. the fix and the feature are entangled in the same function, or one depends on the other's type change), keep it as one commit and classify it later by its dominant purpose. Judge this by mentally tracing whether staging only one half would pass step 2-style build/checks — don't actually run builds per split candidate.
 - Test files belong with the code they test.
 - Match the repository's existing commit message style (prefix conventions like `feat:`/`fix:`, language, phase notation, etc.) observed in step 2c.
 - Follow any commit rules in the project's CLAUDE.md strictly.
@@ -135,8 +137,13 @@ For pasting into the GitHub Releases text field when publishing this tag — thi
 
 - Range: `PREV_TAG..HEAD` (from step 1), excluding this bump commit itself — its `chore: bump version to {VERSION}` message is boilerplate, not a release note. If there's no `PREV_TAG` (first release), cover full history instead and label it "Initial release".
 - `git log PREV_TAG..HEAD --oneline` lists the raw candidates. Each bullet is the commit's subject line, verbatim or lightly smoothed — one line per commit, never expanded with body detail. Merge commits into a single bullet when they're trivially the same logical change (e.g. a fix immediately following what it fixes).
-- Group under `### Features` / `### Fixes` / `### Docs` etc. only if the repo's own commits consistently use matching prefixes (step 2c already established this); otherwise a flat bullet list.
-- Output as plain Markdown (`- ...`), ready to paste as-is — no surrounding commentary.
+- Classify each commit into exactly ONE category — never list the same commit under two headers:
+  - Categories, in output order: `## Added` / `## Changed` / `## Fixed` / `## Removed` / `## Performance` / `## Documentation` / `## Security`.
+  - Judge by: ① message prefix if present (`feat:`→Added, `fix:`→Fixed, `perf:`→Performance, `docs:`→Documentation), ② otherwise the dominant purpose from the subject and diff.
+  - Tie-break for ambiguous commits: Security > Fixed > Added > Removed > Performance > Documentation > Changed (Changed is the catch-all for refactors and behavior changes).
+  - Exclude pure maintenance commits (version bumps, CI config, lockfile-only) from the notes entirely.
+- Omit any category with zero commits — no empty headers.
+- Output as plain Markdown, ready to paste as-is — no surrounding commentary.
 
 ### 9. Done
 
