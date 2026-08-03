@@ -5,9 +5,13 @@
 command sifts your uncommitted working-tree changes into properly-sized,
 logically-grouped commits, using GSD (`.planning/`) or other planning docs
 (`CLAUDE.md`, `README.md`, implementation plans) as grounds for grouping.
-With the `bump` argument, it additionally bumps the project's version,
-runs the build/checks, updates the commit and tag, and syncs matching
-version references in other files (README, install scripts, etc.).
+With the `bump` argument, it additionally bumps the project's version —
+auto-detecting the version-bearing file(s) across a broad range of
+language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go,
+Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and
+more) — runs the build/checks, updates the commit and tag, and syncs
+matching version references in other files (README, install scripts,
+etc.).
 
 This repo is distributed as a plain skill file, installed via a symlink —
 there is no plugin manifest, so the command stays available as the bare
@@ -30,9 +34,9 @@ into one or more logical commits.
 ```
 
 **Bump mode**: sifts first, then bumps the project version (auto-incrementing
-the patch number, or to the version given explicitly), runs the
-build/checks, updates version references across the repo, commits, and tags
-the release.
+the patch number, or to the version given explicitly) across whichever
+supported language ecosystem(s) the repo uses, runs the build/checks,
+updates version references across the repo, commits, and tags the release.
 
 A notable behavior in both modes: commits created by this skill never
 contain any AI-attribution string (no `Co-Authored-By: Claude ...`, no

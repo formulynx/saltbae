@@ -1,6 +1,6 @@
 ---
 name: saltbae
-description: Sift uncommitted changes into properly-sized logical commits, using GSD (.planning/) or other planning docs (CLAUDE.md, README, implementation plans) as grounds for grouping. With the `bump` argument, additionally bump the project version, build, commit and tag (auto-detects package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt), and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
+description: Sift uncommitted changes into properly-sized logical commits, using GSD (.planning/) or other planning docs (CLAUDE.md, README, implementation plans) as grounds for grouping. With the `bump` argument, additionally bump the project version, build, commit and tag — auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more), starting with package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt — and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
 argument-hint: bump | x.x.x
 ---
 
@@ -83,17 +83,19 @@ Follow strictly in order. Stop immediately if any step fails.
 
 Search the repo for version-bearing files, excluding `node_modules/`, `target/`, `dist/`, `build/`, `.git/`:
 
-- `package.json` — `"version"` field
-- `Cargo.toml` — `version` in `[package]` (skip workspace-only manifests)
+- `package.json` — `"version"` field. In a monorepo/workspace, which package(s) to bump is itself deterministic by file existence: `lerna.json` present → use its `"version"` key (a literal semver string means fixed/locked mode — all packages share one version line; the literal string `"independent"` means each package's own `package.json` version is bumped separately) → else `nx.json` with a `release` block present → follow Nx Release's versioning semantics → else a `.changeset/` directory present → the Changesets flow (`pnpm changeset version` / `yarn changeset version` / `npx changeset version` writes the new version into each affected package's `package.json`) → else a `workspaces` field in the root `package.json` (or a `pnpm-workspace.yaml`) with none of the above tooling → bump each workspace package's own `package.json` version independently → else a single-package repo → bump the root `package.json` version only (existing behavior, unchanged).
+- `Cargo.toml` — `version` in `[package]`, OR `version` in `[workspace.package]` when the file has a `[workspace]` section (a "virtual manifest" — one with `[workspace]` but no `[package]` — is still version-bearing if `[workspace.package].version` is present). Member crates that declare `version.workspace = true` inherit the root version automatically at parse time — do not edit them; only a member with its own literal `version = "x.y.z"` is independently versioned. Only skip a `Cargo.toml` entirely when it has `[workspace]` and neither `[package].version` nor `[workspace.package].version` is present.
 - `tauri.conf.json` — `"version"` field
-- `pyproject.toml` — `version` in `[project]` or `[tool.poetry]`
+- `pyproject.toml` — priority order: `[project].version` (a literal key, not listed under `dynamic`) → else `[tool.poetry].version` → else `[tool.setuptools.dynamic].version`'s `attr:`/`file:` indirection (edit the module attribute or file it points to, not `pyproject.toml` itself) → else `dynamic = ["version"]` with `setuptools_scm`/`hatch-vcs`/`versioneer` in `[build-system].requires` (no file exists for this case — it's handled entirely by the git-tag fallback below, not a gap) → else `setup.cfg`'s `[metadata].version` (literal, or its own `attr:`/`file:` indirection) → else `setup.py`'s `setup(version=...)` kwarg (if the value isn't a quoted string literal, trace the variable/expression to whichever file actually defines it — commonly a `_version.py`/`__init__.py` module attribute — and treat that file as version-bearing instead) → else the git-tag fallback below.
 - `CMakeLists.txt` — `VERSION` in the top-level `project(... VERSION x.y.z ...)` call
+- Every other supported ecosystem (PHP, Ruby, Java/Kotlin, Scala, Go, Shell, C/C++ beyond CMake, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and bonus Haskell/Elixir/Lua) — see `references/version-ecosystems.md` for the detection signal, version-bearing file(s)/field, and bump-rule nuance of each.
 
-They may live in subdirectories (e.g. `rust/package.json`). List every file found — ALL of them will be updated in sync.
+They may live in subdirectories (e.g. `rust/package.json`). List every file found — ALL of them will be updated in sync, including across different ecosystems coexisting in one repo (e.g. a Tauri app has `package.json` + `Cargo.toml` + `tauri.conf.json` all in sync; a C++ project may have `CMakeLists.txt` alongside `vcpkg.json`).
 
-- If all files agree on the current version, use it. If they disagree, stop and ask the user which is canonical.
-- If no version-bearing manifest file is found at all, derive the current version from the latest git tag: `git describe --tags --abbrev=0` (strip a leading `v` for the numeric version). If there is also no tag, stop and ask the user for the current version.
+- **Consensus rule**: if all detected files/build-systems agree on the current version, use it. If they disagree — including within a single language, e.g. a C++ repo mid-migration with both `CMakeLists.txt` and `meson.build` — stop and ask the user which is canonical. Never silently prefer one file/build-system over another via a fixed priority order; a strict override risks updating the wrong file during a migration.
+- If no version-bearing manifest file is found at all, derive the current version from the latest git tag: `git describe --tags --abbrev=0` (strip a leading `v` for the numeric version). For ecosystems with no version-file concept by design — Go modules, Shell scripts with no `package.json`, and pure SwiftPM packages (`Package.swift`) — this git-tag read is the correct **primary** mechanism, not a fallback of last resort; treat it as expected, not as a gap. If there is also no tag, stop and ask the user for the current version.
 - Compute the new version. **Patch increment is purely numeric** — `0.4.9` → `0.4.10`, NOT `0.5.0`. MINOR and MAJOR never change on auto-increment.
+- **Suffix/prerelease preservation**: only apply the auto-increment above when the detected version is a bare `MAJOR.MINOR.PATCH` with no suffix. When a suffix marker is present — a semver prerelease/build-metadata tag (`-beta.1`, `+build5`), a PEP 440 pre/post/dev/local segment (`1.2.0rc1`, `1.2.0.post1`, `1.2.0.dev0`, `1.2.0+local`), or a RubyGems `.pre`/`.rc` marker — stop and ask the user what the intended next version is, instead of incrementing through it. **Exception: Maven/sbt's `-SNAPSHOT` suffix** is a perpetual in-development marker, not a specific-prerelease choice — auto-increment the numeric part as usual and preserve `-SNAPSHOT` unchanged (e.g. `1.2.3-SNAPSHOT` → `1.2.4-SNAPSHOT`); only strip it when the bump is explicitly a release cut.
 - Validate semver format (MAJOR.MINOR.PATCH). Print the transition (e.g., `0.3.14 → 0.3.15`).
 - Record `PREV_TAG` for step 8's release notes: the tag `v{OLD_VERSION}`, if it exists (`git rev-parse -q --verify v{OLD_VERSION}`). If it doesn't exist, this is the first release — there is no `PREV_TAG`, and step 8 covers full history instead.
 
@@ -101,9 +103,11 @@ They may live in subdirectories (e.g. `rust/package.json`). List every file foun
 
 Run what the detected toolchains provide, from each file's directory:
 
-- `package.json` with a `build` script → `npm run build` (or the lockfile-matching package manager: pnpm/yarn/bun)
-- `Cargo.toml` → `cargo check`
-- `pyproject.toml` with configured checks (e.g. `ruff`, `pytest` if present) → run them; otherwise skip
+- `package.json` with a `build` script → `npm run build` (or the lockfile-matching package manager: pnpm/yarn/bun). If `tsconfig.json` is present (same ecosystem, not a separate branch): additionally run `tsc --noEmit` (or the project's own `scripts.typecheck`/`scripts.type-check` entry if defined) as a build-independent type-check.
+- `Cargo.toml` → `cargo check`, or `cargo check --workspace` whenever the file has a `[workspace]` section (plain `cargo check` on a non-virtual workspace silently checks only the root crate and skips other members)
+- `pyproject.toml` with configured checks (e.g. `ruff`, `pytest` if present) → run them; also run `python -m build --sdist --wheel .` as the build-sanity step (this ecosystem otherwise only lints/tests, unlike the Cargo/npm rows which build) — if no build backend is configured either, skip
+- `CMakeLists.txt` → `cmake --build <builddir>` if a build directory already exists from prior development; otherwise skip (matching the pyproject.toml precedent — this step never bootstraps a project from scratch)
+- Every other supported ecosystem — see `references/version-ecosystems.md`'s build/check entry for the exact command, or its explicit "skip, no reliable command" note where one isn't confirmed
 
 If anything fails, stop and report. The version has not been changed yet, so re-running after a fix is safe.
 
@@ -118,7 +122,7 @@ Run `git grep -nF` for the OLD version string across tracked files — search BO
 ### 5. Update lockfiles
 
 - `Cargo.toml` updated → run `cargo check` from its directory so `Cargo.lock` picks up the new version (fast; cache is warm from step 2).
-- `package.json` updated and a lockfile references the root package version → run the package manager's install/lockfile-only command if needed.
+- `package.json` updated → regenerate whichever lockfile is present, determined by file existence: `pnpm-lock.yaml` present → pnpm → `pnpm install --lockfile-only`; else `yarn.lock` present → yarn → `yarn install --mode=update-lockfile`; else `package-lock.json` present (or no lockfile yet) → npm → `npm install --package-lock-only`. Each of these updates only the lockfile, not `node_modules`.
 
 ### 6. Commit
 
