@@ -61,6 +61,8 @@ If no `.planning/`, or it doesn't explain the changes, look for other design/imp
 
 Stage and commit each group in order. Use `git add <specific paths>` — never `git add -A` when splitting.
 
+**Splitting within a file — stage hunks, keep the working tree untouched.** When one file contains changes belonging to different commits, do everything at the index level, the way a human uses `git add -p`: extract only the relevant hunks into a patch and stage them with `git apply --cached <patch>` (patch files go in the scratchpad), then commit. The working tree files stay exactly as they are throughout — every intermediate state exists only in the index. Temporary copies of source files, editing a file down to a partial state, or moving files aside all stay off the table; the index is the only splitting mechanism.
+
 **Write the message like a human maintainer would, not a phase-completion report:**
 - **Subject**: imperative mood, ≤50 chars where possible (72 is a hard ceiling), no trailing period — the *what*, at a glance.
 - **Body** (only if the subject doesn't already cover the *why*): blank line, then wrapped ~72 cols. State what changed and why it was needed. Never narrate *how* step-by-step, and never re-derive detail the diff already shows. A handful of bullets is normal; past ~15 lines you have drifted into writing a report, not a commit — cut it back to the essential why.
