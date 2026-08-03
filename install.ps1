@@ -20,7 +20,7 @@ $ErrorActionPreference = 'Stop'
 
 $Owner   = 'formulynx'
 $Repo    = 'saltbae'
-$Ref     = if ($env:SALTBAE_REF)      { $env:SALTBAE_REF }      else { 'v0.1.5' }
+$Ref     = if ($env:SALTBAE_REF)      { $env:SALTBAE_REF }      else { 'v0.1.6' }
 $BaseUrl = if ($env:SALTBAE_BASE_URL) { $env:SALTBAE_BASE_URL } else { "https://cdn.jsdelivr.net/gh/$Owner/$Repo@$Ref" }
 
 function Say($msg) { Write-Output "==> $msg" }
