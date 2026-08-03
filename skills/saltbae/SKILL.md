@@ -1,6 +1,7 @@
 ---
 name: saltbae
 description: Sift uncommitted changes into properly-sized logical commits, using GSD (.planning/) or other planning docs (CLAUDE.md, README, implementation plans) as grounds for grouping. With the `bump` argument, additionally bump the project version, build, commit and tag (auto-detects package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt), and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
+argument-hint: bump | x.x.x
 ---
 
 # Saltbae — sift changes into well-seasoned commits
