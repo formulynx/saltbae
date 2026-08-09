@@ -27,8 +27,8 @@ main() {
     if [ -L "$skill_link" ]; then
       rm -f "$skill_link"
     else
-      rm -f "$skill_link/SKILL.md" "$skill_link/.saltbae-ref" 2>/dev/null || true
-      rmdir "$skill_link" 2>/dev/null || true
+      rm -f "$skill_link/SKILL.md" "$skill_link/references/version-ecosystems.md" "$skill_link/.saltbae-ref" 2>/dev/null || true
+      rmdir "$skill_link/references" "$skill_link" 2>/dev/null || true
     fi
     echo "saltbae uninstalled."
     return
@@ -54,7 +54,7 @@ main() {
       # own SKILL.md (plus the .saltbae-ref version marker). Recognize and
       # replace it; refuse anything else.
       if [ -d "$skill_link" ] \
-        && ! ls -A "$skill_link" 2>/dev/null | grep -qvx -e 'SKILL.md' -e '.saltbae-ref' \
+        && ! ls -A "$skill_link" 2>/dev/null | grep -qvx -e 'SKILL.md' -e 'references' -e '.saltbae-ref' \
         && grep -q '^name: saltbae$' "$skill_link/SKILL.md" 2>/dev/null; then
         rm -rf "$skill_link"
       else
@@ -98,6 +98,9 @@ main() {
 
     say "Fetching skills/saltbae/SKILL.md"
     fetch "$BASE_URL/skills/saltbae/SKILL.md" "$skill_link/SKILL.md"
+    say "Fetching skills/saltbae/references/version-ecosystems.md"
+    mkdir -p "$skill_link/references"
+    fetch "$BASE_URL/skills/saltbae/references/version-ecosystems.md" "$skill_link/references/version-ecosystems.md"
     echo "$REF" > "$ref_file"
   fi
 

@@ -33,6 +33,7 @@ $SkillDir  = Join-Path $SkillsDir 'saltbae'
 # Keep in sync with install.sh's srcs/dests.
 $Payload = @(
   @{ Src = 'skills/saltbae/SKILL.md'; Dest = (Join-Path $SkillDir 'SKILL.md') }
+  @{ Src = 'skills/saltbae/references/version-ecosystems.md'; Dest = (Join-Path $SkillDir 'references/version-ecosystems.md') }
 )
 
 # Records the installed ref (remote mode only); lets re-runs skip when current.
@@ -42,6 +43,10 @@ if ($Uninstall) {
   Say "Removing $SkillDir"
   foreach ($p in $Payload) { Remove-Item -Force -ErrorAction SilentlyContinue $p.Dest }
   Remove-Item -Force -ErrorAction SilentlyContinue $RefFile
+  $RefsDir = Join-Path $SkillDir 'references'
+  if ((Test-Path $RefsDir) -and -not (Get-ChildItem -Force $RefsDir)) {
+    Remove-Item -Force $RefsDir
+  }
   if ((Test-Path $SkillDir) -and -not (Get-ChildItem -Force $SkillDir)) {
     Remove-Item -Force $SkillDir
   }
@@ -61,6 +66,7 @@ if ($RepoDir -and (Test-Path $LocalSkill)) {
   Say "Mode: local clone ($RepoDir) - copying"
   New-Item -ItemType Directory -Force -Path $SkillsDir, $SkillDir | Out-Null
   foreach ($p in $Payload) {
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $p.Dest) | Out-Null
     Copy-Item -Force -Path (Join-Path $RepoDir $p.Src) -Destination $p.Dest
   }
   # A clone copy tracks the working tree, not a released ref.
@@ -79,6 +85,7 @@ if ($RepoDir -and (Test-Path $LocalSkill)) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
   foreach ($p in $Payload) {
     Say "Fetching $($p.Src)"
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $p.Dest) | Out-Null
     Invoke-WebRequest -UseBasicParsing -Uri "$BaseUrl/$($p.Src)" -OutFile $p.Dest
   }
   Set-Content -Path $RefFile -Value $Ref
