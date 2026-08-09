@@ -1,6 +1,6 @@
 ---
 name: saltbae
-description: Sift uncommitted changes into properly-sized logical commits, using GSD (.planning/) or other planning docs (CLAUDE.md, README, implementation plans) as grounds for grouping. With the `bump` argument, additionally bump the project version, build, commit and tag — auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more), starting with package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt — and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
+description: Sift uncommitted changes into properly-sized logical commits, using planning docs (plan files, CLAUDE.md, README, implementation plans) as grounds for grouping. With the `bump` argument, additionally bump the project version, build, commit and tag — auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more), starting with package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt — and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
 argument-hint: bump | x.x.x
 ---
 
@@ -27,16 +27,13 @@ Run `git status`. If the working tree is clean: in sift mode, report "nothing to
 
 Determine what each change belongs to, in this priority order:
 
-**a. GSD project? (check first)**
-If `.planning/` exists in the repo root, this is a GSD-managed project. Read what is relevant:
-- `.planning/STATE.md` — current phase and position
-- Current phase directory (`.planning/phases/<current>/`) — `PLAN*.md`, `SUMMARY*.md`
-- `.planning/ROADMAP.md` — if phase context is unclear
+**a. Dedicated planning directory? (check first)**
+If a planning directory exists in the repo root (e.g. `.planning/`, `plans/`, `docs/plans/`), read what is relevant: state/status files, current phase or plan files (`PLAN*.md`, `SUMMARY*.md`), and roadmap files if the context is unclear.
 
 Use these to map changes to phases/plans/tasks.
 
-**b. Non-GSD planning docs (fallback / supplement)**
-If no `.planning/`, or it doesn't explain the changes, look for other design/implementation grounds (check existence before reading; read only what plausibly relates to the diff):
+**b. Other planning docs (fallback / supplement)**
+If no planning directory, or it doesn't explain the changes, look for other design/implementation grounds (check existence before reading; read only what plausibly relates to the diff):
 - `CLAUDE.md`, `AGENTS.md`
 - `README.md`
 - Common plan files: `IMPLEMENTATION_PLAN*.md`, `PLAN*.md`, `PLANNING*.md`, `TODO*.md`, `ROADMAP*.md`, `docs/` design docs
@@ -66,7 +63,7 @@ Stage and commit each group in order. Use `git add <specific paths>` — never `
 **Write the message like a human maintainer would, not a phase-completion report:**
 - **Subject**: imperative mood, ≤50 chars where possible (72 is a hard ceiling), no trailing period — the *what*, at a glance.
 - **Body** (only if the subject doesn't already cover the *why*): blank line, then wrapped ~72 cols. State what changed and why it was needed. Never narrate *how* step-by-step, and never re-derive detail the diff already shows. A handful of bullets is normal; past ~15 lines you have drifted into writing a report, not a commit — cut it back to the essential why.
-- Leave out of the message entirely: verification transcripts (test/build output, pass/fail counts, command invocations), exhaustive file-by-file listings (`git show --stat` recovers this on demand), edge-case-by-edge-case narration, and deferred-work rationale — none of it survives usefully in `git log`. If the project is GSD-managed, that detail already belongs in `.planning/phases/<phase>/SUMMARY*.md` or its PROGRESS csv/log — reference it (`see SUMMARY.md`) instead of re-narrating it in the commit body.
+- Leave out of the message entirely: verification transcripts (test/build output, pass/fail counts, command invocations), exhaustive file-by-file listings (`git show --stat` recovers this on demand), edge-case-by-edge-case narration, and deferred-work rationale — none of it survives usefully in `git log`. If the project keeps plan/summary files, that detail already belongs there — reference it (`see SUMMARY.md`) instead of re-narrating it in the commit body.
 - Matching the repo's existing style (prefix conventions, language) from step 2c is about *form*, not license to expand length or content beyond the rules above.
 
 ### 5. Report

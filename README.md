@@ -3,8 +3,8 @@
 `saltbae` is a commit-hygiene skill for
 [Claude Code](https://claude.com/product/claude-code). The `/saltbae`
 command sifts your uncommitted working-tree changes into properly-sized,
-logically-grouped commits, using GSD (`.planning/`) or other planning docs
-(`CLAUDE.md`, `README.md`, implementation plans) as grounds for grouping.
+logically-grouped commits, using planning docs (plan files, `CLAUDE.md`,
+`README.md`, implementation plans) as grounds for grouping.
 With the `bump` argument, it additionally bumps the project's version —
 auto-detecting the version-bearing file(s) across a broad range of
 language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go,
