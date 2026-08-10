@@ -196,3 +196,7 @@ change history worth serving.
 ⠄⠀⠀⠂⠀⠀⠤⡈⠓⠶⠈⠙⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡀⠀⠀⣇
 ⠀⠀⠀⠀⠉⠀⠀⠐⠀⠀⠀⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⢻
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
