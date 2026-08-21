@@ -1,5 +1,7 @@
 # saltbae
 
+> *"Cooked through? Now, folks — it's saltbae time."*
+
 `saltbae` is a commit-hygiene skill for
 [Claude Code](https://claude.com/product/claude-code). The `/saltbae`
 command carves your uncommitted working-tree changes into properly-sized,
@@ -174,6 +176,16 @@ works) is a different skill from plating it for the guest (whether the
 change is legible to someone else): the programmer's job is the former,
 `saltbae`'s is the latter — carving and seasoning the working tree into a
 change history worth serving.
+
+The kitchen has other stations upstream. Matt Pocock's
+[`grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling)
+skill puts a plan or idea over the heat first — interrogating it round
+after round until what comes off the grill actually holds up. That's still
+raw work at that point: a stress-tested decision, not yet something a
+reviewer can sit down to. `saltbae` picks up from there, at the pass, once
+the changes exist: carving the result into commits sized for a diner to
+actually get through, and seasoning each with a message that says what's
+on the plate.
 
 ```
 ⠀⠀⠀⠀⣀⡀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⢀⡔⠁⠴⠋⡿⠀⠀⠁⠀⠓⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
