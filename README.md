@@ -2,7 +2,7 @@
 
 > *"Cooked through? Now, folks — it's saltbae time."*
 
-`saltbae` is a commit-hygiene skill for
+`saltbae` is a commit-serving skill for
 [Claude Code](https://claude.com/product/claude-code). The `/saltbae`
 command carves your uncommitted working-tree changes into properly-sized,
 logically-grouped commits, using planning docs (plan files, `CLAUDE.md`,
