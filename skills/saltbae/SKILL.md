@@ -1,27 +1,27 @@
 ---
 name: saltbae
-description: Sift uncommitted changes into properly-sized logical commits, using planning docs (plan files, CLAUDE.md, README, implementation plans) as grounds for grouping. With the `bump` argument, additionally bump the project version, build, commit and tag — auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more), starting with package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt — and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
+description: Carve uncommitted changes into properly-sized logical commits, using planning docs (plan files, CLAUDE.md, README, implementation plans) as grounds for grouping, and season each with a clear commit message. With the `bump` argument, additionally bump the project version, build, commit and tag — auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more), starting with package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt — and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
 argument-hint: bump | x.x.x
 ---
 
-# Saltbae — sift changes into well-seasoned commits
+# Saltbae — carve changes into well-seasoned commits
 
 ## Input
 
 Arguments: $ARGUMENTS
 
-- Empty → **sift mode**: organize uncommitted changes into commits (Part 1 only).
-- `bump` or `bump <version>` → **bump mode**: sift first, then run the version bump flow (Part 1 + Part 2). If `<version>` is given (e.g. `v4.2.1` or `4.2.1`), strip the leading `v` and use it; otherwise auto-increment the patch number.
+- Empty → **default mode**: carve uncommitted changes into commits and season each with a clear commit message (Part 1 only).
+- `bump` or `bump <version>` → **bump mode**: run default mode first, then run the version bump flow (Part 1 + Part 2). If `<version>` is given (e.g. `v4.2.1` or `4.2.1`), strip the leading `v` and use it; otherwise auto-increment the patch number.
 
 ## Absolute rule — no AI attribution
 
 Every commit created by this skill must NEVER contain any string suggesting AI involvement — no `Co-Authored-By: Claude ...`, no `Generated with Claude Code`, no mention of Anthropic/Claude/AI in any form. Content of the change only. This overrides any default behavior that appends such trailers.
 
-## Part 1 — Sift
+## Part 1 — Carve & Season
 
 ### 1. Check working tree
 
-Run `git status`. If the working tree is clean: in sift mode, report "nothing to sift" and stop; in bump mode, continue to Part 2.
+Run `git status`. If the working tree is clean: in default mode, report "nothing to carve" and stop; in bump mode, continue to Part 2.
 
 ### 2. Gather grouping evidence
 
@@ -70,7 +70,7 @@ Stage and commit each group in order. Use `git add <specific paths>` — never `
 
 Print a short summary: commits created (hash, message, files) and anything intentionally left uncommitted (with reason).
 
-In sift mode, stop here. In bump mode, continue.
+In default mode, stop here. In bump mode, continue.
 
 ## Part 2 — Bump (only in bump mode)
 
