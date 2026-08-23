@@ -26,10 +26,10 @@ Anthropic/Claude/AI mention) — this overrides any default trailer behavior.
 
 ```sh
 # macOS / Linux / WSL / Git Bash (any POSIX shell)
-curl -fsSL https://cdn.jsdelivr.net/gh/formulynx/saltbae@v0.1.8/install.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/formulynx/saltbae@v0.1.9/install.sh | bash
 
 # Native Windows (PowerShell or cmd, no POSIX shell)
-irm https://cdn.jsdelivr.net/gh/formulynx/saltbae@v0.1.8/install.ps1 | iex
+irm https://cdn.jsdelivr.net/gh/formulynx/saltbae@v0.1.9/install.ps1 | iex
 ```
 
 - Copies `skills/saltbae/SKILL.md` into `~/.claude/skills/saltbae/SKILL.md`, pinned to a release tag
