@@ -1,0 +1,11 @@
+{
+  "name": "saltbae",
+  "version": "0.1.9",
+  "description": "Commit-serving skill: /saltbae carves uncommitted changes into logical commits with clear messages; /saltbae bump cuts a version bump and release tag.",
+  "author": {
+    "name": "formulynx",
+    "url": "https://github.com/formulynx"
+  },
+  "homepage": "https://github.com/formulynx/saltbae",
+  "license": "MIT"
+}

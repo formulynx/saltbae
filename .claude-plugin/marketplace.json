@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "saltbae",
+  "description": "Hosts the saltbae plugin — commit-serving skill for Claude Code.",
+  "owner": {
+    "name": "formulynx",
+    "url": "https://github.com/formulynx"
+  },
+  "plugins": [
+    {
+      "name": "saltbae",
+      "source": "./",
+      "description": "Commit-serving skill. /saltbae carves uncommitted changes into logical commits with clear messages; /saltbae bump cuts a version bump and release tag.",
+      "category": "productivity"
+    }
+  ]
+}

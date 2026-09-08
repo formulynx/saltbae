@@ -24,23 +24,23 @@ Anthropic/Claude/AI mention) — this overrides any default trailer behavior.
 
 ## Install
 
-```sh
-# macOS / Linux / WSL / Git Bash (any POSIX shell)
-curl -fsSL https://cdn.jsdelivr.net/gh/formulynx/saltbae@v0.1.9/install.sh | bash
+saltbae ships as a Claude Code plugin. Add the marketplace once, then install:
 
-# Native Windows (PowerShell or cmd, no POSIX shell)
-irm https://cdn.jsdelivr.net/gh/formulynx/saltbae@v0.1.9/install.ps1 | iex
+```sh
+claude plugin marketplace add formulynx/saltbae
+claude plugin install saltbae@saltbae
 ```
 
-- Copies `skills/saltbae/SKILL.md` into `~/.claude/skills/saltbae/SKILL.md`, pinned to a release tag
-- Use `@main` for latest dev code
-- For dev, git clone and run `saltbae/install.sh` (symlinks instead of copies)
-- Uninstall with `--uninstall` (`-Uninstall` on the `.ps1`)
+- Uninstall with `claude plugin uninstall saltbae@saltbae`
+- For dev, `claude plugin marketplace add /path/to/clone` and install from
+  there, or run `claude --plugin-dir /path/to/clone`
 
 ## Update
 
-- Re-run the one-liner with a newer tag (or `@main`)
-- Git-clone installs: `git -C saltbae pull`
+```sh
+claude plugin marketplace update saltbae
+claude plugin update saltbae@saltbae
+```
 
 ## Why "saltbae"?
 
