@@ -34,13 +34,7 @@ claude plugin install saltbae@saltbae
 - Uninstall with `claude plugin uninstall saltbae@saltbae`
 - For dev, `claude plugin marketplace add /path/to/clone` and install from
   there, or run `claude --plugin-dir /path/to/clone`
-
-## Update
-
-```sh
-claude plugin marketplace update saltbae
-claude plugin update saltbae@saltbae
-```
+- Update with `/plugin` -> marketplace -> `saltbae` -> `Update marketplace` or `Enable auto-update`
 
 ## Why "saltbae"?
 
@@ -49,8 +43,8 @@ Without a proper cut (splitting the diff into logical commits) and seasoning (a 
 a reviewer can't chew through the change despite your tireless effort.  
 You focus on the code, `/saltbae` handles the plating.
 
-🔥🥩 [`/grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) (Thanks to Matt Pocock)
-stress-tests a plan before anything is built.  
+🔥🥩 [`/grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) 
+stress-tests a plan before anything is built. (Thanks to Matt Pocock) 
 🍽️🍖 `/saltbae` picks up once the changes exist, carving and seasoning them into a reviewable history.
 
 ```
