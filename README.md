@@ -49,9 +49,9 @@ Without a proper cut (splitting the diff into logical commits) and seasoning (a 
 a reviewer can't chew through the change despite your tireless effort.  
 You focus on the code, `/saltbae` handles the plating.
 
-[`/grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) (Thanks to Matt Pocock)
+🔥🥩 [`/grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) (Thanks to Matt Pocock)
 stress-tests a plan before anything is built.  
-`/saltbae` picks up once the changes exist, carving and seasoning them into a reviewable history.
+🍽️🍖 `/saltbae` picks up once the changes exist, carving and seasoning them into a reviewable history.
 
 ```
 ⠀⠀⠀⠀⣀⡀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⢀⡔⠁⠴⠋⡿⠀⠀⠁⠀⠓⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -78,4 +78,4 @@ stress-tests a plan before anything is built.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT / See [LICENSE](LICENSE)
