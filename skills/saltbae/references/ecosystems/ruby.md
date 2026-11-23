@@ -28,7 +28,7 @@ RubyGems flags a gem as prerelease whenever the version contains a letter (`.pre
 
 ### Lockfile
 
-None.
+`Gemfile.lock` present and the gemspec is loaded via the `gemspec` directive or a path/git dependency → run `bundle install` (or `bundle lock`) so the lock's `PATH` section picks up the new version.
 
 ### Extra update steps
 

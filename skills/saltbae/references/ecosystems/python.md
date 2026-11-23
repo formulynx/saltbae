@@ -30,7 +30,7 @@ PEP 440 pre/post/dev/local segments (`1.2.0rc1`, `1.2.0.post1`, `1.2.0.dev0`, `1
 
 ### Lockfile
 
-None.
+`uv.lock` present → run `uv lock`. It records the project's own version for the root package.
 
 ### Extra update steps
 

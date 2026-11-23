@@ -78,7 +78,7 @@ Follow strictly in order. Stop immediately if any step fails.
 
 ### 1. Detect version files and current version
 
-Search the repo for the detection patterns below, at the root and in subdirectories, excluding `.git/` and dependency/build-output directories (`node_modules/`, `target/`, `dist/`, `build/`). For each pattern found, read the matching file under `references/ecosystems/`, and only those. Each reference defines, per tool: detection, version-bearing file and field, bump-rule nuance, build/check, lockfile, and extra update steps.
+Search the repo for the detection patterns below, at the root and in subdirectories, excluding `.git/` and dependency/build-output directories (`node_modules/`, `target/`, `dist/`, `build/`, `bin/`, `obj/`, `vendor/`). For each pattern found, read the matching file under `references/ecosystems/`, and only those. Each reference defines, per tool: detection, version-bearing file and field, bump-rule nuance, build/check, lockfile, and extra update steps.
 
 | Detection pattern | Reference |
 |---|---|

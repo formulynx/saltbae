@@ -28,7 +28,7 @@ Caret (`^`) / tilde (`~`) constraints in `require` blocks are dependency constra
 
 ### Lockfile
 
-None.
+`composer.lock` present and `"version"` was edited → run `composer validate --strict` again. If it reports the lock file as out of date, run `composer update --lock` to refresh only the lock's content hash.
 
 ### Extra update steps
 
