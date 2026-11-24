@@ -380,6 +380,25 @@ def x_rockspec(root, p):
     return [e] if e else []
 
 
+def x_claude_plugin(root, p):
+    v = json.loads(read(p)).get("version")
+    if isinstance(v, str):
+        return [entry(root, p, "claude-plugin", "plugin", '"version"', v)]
+    return [entry(root, p, "claude-plugin", "plugin", "commit SHA", status="tag-versioned",
+                  note="no version: installs track the source commit")]
+
+
+def x_claude_marketplace(root, p):
+    found = []
+    for i, plugin in enumerate(json.loads(read(p)).get("plugins", [])):
+        v = plugin.get("version") if isinstance(plugin, dict) else None
+        if isinstance(v, str):
+            name = plugin.get("name", i)
+            found.append(entry(root, p, "claude-plugin", "marketplace",
+                               f'plugins[{name}].version', v))
+    return found
+
+
 def match(name: str, path: Path):
     """Return the extractor for a file, or None."""
     exact = {
@@ -397,6 +416,11 @@ def match(name: str, path: Path):
         "project.pbxproj": x_pbxproj, "pubspec.yaml": x_pubspec,
         "package.yaml": x_hpack, "mix.exs": x_mix,
     }
+    if path.parent.name == ".claude-plugin":
+        if name == "plugin.json":
+            return x_claude_plugin
+        if name == "marketplace.json":
+            return x_claude_marketplace
     if name in exact:
         if name == "project.pbxproj" and not path.parent.name.endswith(".xcodeproj"):
             return None
@@ -500,6 +524,7 @@ def tool_candidates(root: Path, eco: str, tool: str, path: str | None) -> list[s
         ("dotnet", "nuget"): ["dotnet"], ("swift-objc", "swiftpm"): ["swift"],
         ("swift-objc", "cocoapods"): ["pod"], ("swift-objc", "xcode"): ["xcodebuild"],
         ("powershell", "module"): ["pwsh"],
+        ("claude-plugin", "plugin"): ["claude"], ("claude-plugin", "marketplace"): ["claude"],
     }
     return table.get((eco, tool), [])
 
@@ -520,6 +545,8 @@ def tools(root: Path) -> dict:
     result, seen = [], set()
     for e in det["files"]:
         base = (root / e["path"]).parent if e["path"] else root
+        if base.name == ".claude-plugin":  # validate runs from the plugin root
+            base = base.parent
         for cmd in tool_candidates(root, e["ecosystem"], e["tool"], e["path"]):
             key = (cmd, str(base))
             if key in seen:
