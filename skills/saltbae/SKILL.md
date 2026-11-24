@@ -58,7 +58,15 @@ If no planning directory, or it doesn't explain the changes, look for other desi
 
 Stage and commit each group in order. Use `git add <specific paths>` — never `git add -A` when splitting.
 
-**Splitting within a file — stage hunks, keep the working tree untouched.** When one file contains changes belonging to different commits, do everything at the index level, the way a human uses `git add -p`: extract only the relevant hunks into a patch and stage them with `git apply --cached <patch>` (patch files go in the scratchpad), then commit. The working tree files stay exactly as they are throughout — every intermediate state exists only in the index. Temporary copies of source files, editing a file down to a partial state, or moving files aside all stay off the table; the index is the only splitting mechanism.
+**The working tree is read-only during Part 1.** Never write to a file in the repository's working tree to build a commit: no editing a file down to a partial state, no copying an intermediate version over it, no moving it aside and restoring it afterwards — even if the final content would end up identical. Every intermediate state exists only in the index.
+
+**Splitting within a file.** When one file contains changes belonging to different commits, build each commit's version of that file in the index:
+- Default: extract only the relevant hunks into a patch and stage them with `git apply --cached <patch>`, the way a human uses `git add -p`.
+- If the hunks cannot be separated cleanly: write the intended intermediate content to a scratch file and stage it with `git update-index --cacheinfo 100644,$(git hash-object -w <scratch-file>),<path>`.
+
+Scratch files (patches, intermediate contents) go in the scratchpad, outside the repository, and are only ever read by `git apply --cached` / `git hash-object`. Never copy them into the working tree.
+
+**Verify the working tree was not touched.** Before the first `git add`, record a content hash of every changed or untracked file (e.g. `git ls-files -z -m -o --exclude-standard | xargs -0 shasum`). After the last commit, recompute it for the same paths and confirm it matches. A mismatch means a working-tree file was modified: stop and report which file.
 
 **Write the message like a human maintainer would, not a phase-completion report:**
 - **Subject**: imperative mood, ≤50 chars where possible (72 is a hard ceiling), no trailing period — the *what*, at a glance.
