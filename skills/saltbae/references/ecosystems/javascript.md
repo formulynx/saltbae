@@ -4,39 +4,27 @@
 
 ### Detection
 
-`package.json` at the repo root or in a subdirectory (e.g. `rust/package.json`).
+`package.json`, at the root or in a subdirectory.
 
 ### Version-bearing file
 
-`package.json`'s `"version"` field.
+`package.json`'s `"version"`. In a monorepo, decide which package(s) to bump by file existence, first match wins:
 
-In a monorepo/workspace, which package(s) to bump is determined by file existence, in this order:
-
-1. `lerna.json` present → use its `"version"` key.
-   - A literal semver string means fixed/locked mode. All packages share one version line.
-   - The literal string `"independent"` means each package's own `package.json` version is bumped separately.
-2. Else `nx.json` with a `release` block present → follow Nx Release's versioning semantics.
-3. Else a `.changeset/` directory present → the Changesets flow. `pnpm changeset version` / `yarn changeset version` / `npx changeset version` writes the new version into each affected package's `package.json`.
-4. Else a `workspaces` field in the root `package.json`, or a `pnpm-workspace.yaml`, with none of the above tooling → bump each workspace package's own `package.json` version independently.
-5. Else a single-package repo → bump the root `package.json` version only.
-
-### Bump-rule nuance
-
-None beyond the general rule in `SKILL.md`.
+1. `lerna.json` → its `"version"`. A semver string means all packages share it; `"independent"` means each `package.json` is bumped separately.
+2. `nx.json` with a `release` block → follow Nx Release.
+3. `.changeset/` → run `<pm> changeset version`, which writes each affected `package.json`.
+4. `workspaces` in the root `package.json`, or `pnpm-workspace.yaml` → bump each workspace `package.json` independently.
+5. Otherwise → the root `package.json` only.
 
 ### Build/check
 
-- A `build` script present → `npm run build`, or the lockfile-matching package manager (pnpm/yarn/bun).
-- `tsconfig.json` present → additionally run `tsc --noEmit` as a build-independent type-check. Use the project's own `scripts.typecheck` / `scripts.type-check` entry instead if defined.
+- `build` script present → `<pm> run build`, where `<pm>` matches the lockfile.
+- `tsconfig.json` present → also `scripts.typecheck` / `scripts.type-check` if defined, else `tsc --noEmit`.
 
 ### Lockfile
 
-Regenerate whichever lockfile is present, determined by file existence. Each command updates only the lockfile, not `node_modules`.
+First match wins; each command touches only the lockfile:
 
-1. `pnpm-lock.yaml` present → `pnpm install --lockfile-only`
-2. Else `yarn.lock` present → `yarn install --mode=update-lockfile`
-3. Else `package-lock.json` present, or no lockfile yet → `npm install --package-lock-only`
-
-### Extra update steps
-
-None.
+1. `pnpm-lock.yaml` → `pnpm install --lockfile-only`
+2. `yarn.lock` → `yarn install --mode=update-lockfile`
+3. `package-lock.json` or none → `npm install --package-lock-only`

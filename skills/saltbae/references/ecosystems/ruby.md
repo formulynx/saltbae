@@ -4,32 +4,23 @@
 
 ### Detection
 
-(a) `*.gemspec` at the repo root → a library/gem project, version-bearing.
+(a) `*.gemspec` → version-bearing.
 
-(b) `Gemfile` with no `.gemspec` → an application. `Gemfile` only declares dependency constraints and has no project-version field. The project is tag-versioned, and the git tag is the primary source.
-
-(c) Both present → the `.gemspec` wins. The `Gemfile`'s `gemspec` directive only pulls in its dev/test dependencies.
+(b) `Gemfile` without a gemspec → an application; tag-versioned.
 
 ### Version-bearing file
 
-Check the gemspec for a literal first:
-
-1. A literal `spec.version = "x.y.z"` (or `s.version = "..."`) in the gemspec → edit it. This is the minority/legacy pattern.
-2. Else the gemspec references a constant (`spec.version = MyGem::VERSION`) → do not edit the gemspec. Edit `lib/<gem_name>/version.rb`'s `VERSION = "x.y.z"` constant. This is what `bundle gem <name>` scaffolds by default.
+1. A literal `spec.version = "x.y.z"` in the gemspec → edit it.
+2. Otherwise the gemspec references a constant → edit `VERSION` in `lib/<gem>/version.rb`, not the gemspec.
 
 ### Bump-rule nuance
 
-RubyGems flags a gem as prerelease whenever the version contains a letter (`.pre`, `.rc1`, `.beta.3`, etc.). Treat any letter-bearing suffix as a suffix and ask the user instead of incrementing through it.
+Any letter in the version (`.pre`, `.rc1`, `.beta.3`) is a suffix.
 
 ### Build/check
 
-- `Rakefile` calls `Bundler::GemHelper.install_tasks` → `bundle exec rake build`.
-- Otherwise → `gem build <gem_name>.gemspec --strict`. `--strict` turns spec-validation warnings into errors, catching a broken `version.rb` reference.
+`bundle exec rake build` when the Rakefile installs `Bundler::GemHelper` tasks; otherwise `gem build <gem>.gemspec --strict`.
 
 ### Lockfile
 
-`Gemfile.lock` present and the gemspec is loaded via the `gemspec` directive or a path/git dependency → run `bundle install` (or `bundle lock`) so the lock's `PATH` section picks up the new version.
-
-### Extra update steps
-
-None.
+`Gemfile.lock` present and the gemspec is loaded via `gemspec` or a path dependency → `bundle lock`.
