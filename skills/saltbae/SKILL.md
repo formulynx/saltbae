@@ -1,7 +1,7 @@
 ---
 name: saltbae
-description: Carve uncommitted changes into properly-sized logical commits, using planning docs (plan files, CLAUDE.md, README, implementation plans) as grounds for grouping, and season each with a clear commit message. With the `bump` argument, additionally bump the project version, build, commit and tag — auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more), starting with package.json / Cargo.toml / tauri.conf.json / pyproject.toml / CMakeLists.txt — and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
-argument-hint: bump | x.x.x
+description: Carves uncommitted changes into properly-sized logical commits, using planning docs (plan files, CLAUDE.md, README, implementation plans) as grounds for grouping, and seasons each with a clear commit message. With the `bump` argument, also bumps the project version, builds, commits and tags the release. It auto-detects the version-bearing file(s) across a broad range of language ecosystems (npm/Node, Cargo/Rust, Tauri, Python, Java/Kotlin/Scala, Go, Ruby, PHP, C/C++, C#/.NET, Swift/Objective-C, Dart/Flutter, PowerShell, and more) and syncs matching version references in other files (README, install scripts, etc.). Use when the user wants to organize/split/commit working-tree changes, or cut a version bump / release tag.
+argument-hint: "[bump [x.y.z]]"
 ---
 
 # Saltbae — carve changes into well-seasoned commits
