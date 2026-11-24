@@ -68,48 +68,62 @@ In default mode, stop here.
 
 Follow strictly in order. Stop immediately if any step fails.
 
+`scripts/versions.py` (in this skill's base directory; Python 3.8+) handles detection, tool checks and verification. Run it from the repo root with `python3 <skill-dir>/scripts/versions.py <subcommand>`; it prints JSON. If `python3` is unavailable, do the same work by hand using the table in step 1, skipping `.git/`, `node_modules/`, `target/`, `dist/`, `build/`, `bin/`, `obj/` and `vendor/`.
+
 ### 1. Detect version files and current version
 
-Search the repo for the detection patterns below, at the root and in subdirectories, excluding `.git/` and dependency/build-output directories (`node_modules/`, `target/`, `dist/`, `build/`, `bin/`, `obj/`, `vendor/`). For each pattern found, read the matching file under `references/ecosystems/`, and only those. Each reference defines, per tool: detection, version-bearing file and field, bump-rule nuance, build/check, lockfile, and extra update steps; an omitted section means nothing to do.
+Run `versions.py detect`. Each entry in `files` has a `status`:
+
+| `status` | Meaning | Action |
+|---|---|---|
+| `ok` | Literal version found | Bump it |
+| `unresolved` | Behind an indirection (see `note`) | Resolve it with the reference |
+| `tag-versioned` | No version file by design | Use the git tag |
+| `inconsistent` | One file holds conflicting values | Ask the user |
+
+Read every reference listed in `references`, and only those. Each covers, per tool: detection, version-bearing file, bump-rule nuance, build/check, lockfile, and extra update steps; an omitted section means nothing to do. Apply the references on top of the script output: e.g. a monorepo rule may exclude some `package.json` files, and an unresolved entry may point to a different file.
 
 | Detection pattern | Reference |
 |---|---|
-| `package.json` | `javascript.md` |
-| `Cargo.toml`, `tauri.conf.json` | `rust.md` |
-| `pyproject.toml`, `setup.cfg`, `setup.py` | `python.md` |
-| `CMakeLists.txt`, `meson.build`, `configure.ac`, `configure.in`, `vcpkg.json`, `conanfile.py` | `c-cpp.md` |
-| `composer.json` | `php.md` |
-| `*.gemspec`, `Gemfile` | `ruby.md` |
-| `pom.xml`, `build.gradle`, `build.gradle.kts`, `settings.gradle`, `settings.gradle.kts` | `java-kotlin.md` |
-| `build.sbt` | `scala.md` |
-| `go.mod` | `go.md` |
-| `*.csproj`, `*.fsproj`, `*.vbproj`, `Directory.Build.props`, `*.nuspec` | `dotnet.md` |
-| `Package.swift`, `*.podspec`, `*.xcodeproj`, `*.xcworkspace` | `swift-objc.md` |
-| `pubspec.yaml` | `dart.md` |
-| `*.psd1`, `*.ps1` | `powershell.md` |
-| `*.cabal`, `package.yaml`, `stack.yaml` | `haskell.md` |
-| `mix.exs` | `elixir.md` |
-| `*.rockspec` | `lua.md` |
-| `*.sh`, `*.bash` with none of the above | `shell.md` |
+| `package.json`, `lerna.json` | [references/ecosystems/javascript.md](references/ecosystems/javascript.md) |
+| `Cargo.toml`, `tauri.conf.json` | [references/ecosystems/rust.md](references/ecosystems/rust.md) |
+| `pyproject.toml`, `setup.cfg`, `setup.py` | [references/ecosystems/python.md](references/ecosystems/python.md) |
+| `CMakeLists.txt`, `meson.build`, `configure.ac`, `configure.in`, `vcpkg.json`, `conanfile.py` | [references/ecosystems/c-cpp.md](references/ecosystems/c-cpp.md) |
+| `composer.json` | [references/ecosystems/php.md](references/ecosystems/php.md) |
+| `*.gemspec`, `Gemfile` | [references/ecosystems/ruby.md](references/ecosystems/ruby.md) |
+| `pom.xml`, `build.gradle(.kts)`, `settings.gradle(.kts)` | [references/ecosystems/java-kotlin.md](references/ecosystems/java-kotlin.md) |
+| `build.sbt` | [references/ecosystems/scala.md](references/ecosystems/scala.md) |
+| `go.mod` | [references/ecosystems/go.md](references/ecosystems/go.md) |
+| `*.csproj`, `*.fsproj`, `*.vbproj`, `Directory.Build.props`, `*.nuspec` | [references/ecosystems/dotnet.md](references/ecosystems/dotnet.md) |
+| `Package.swift`, `*.podspec`, `*.xcodeproj` | [references/ecosystems/swift-objc.md](references/ecosystems/swift-objc.md) |
+| `pubspec.yaml` | [references/ecosystems/dart.md](references/ecosystems/dart.md) |
+| `*.psd1`, `*.ps1` | [references/ecosystems/powershell.md](references/ecosystems/powershell.md) |
+| `*.cabal`, `package.yaml`, `stack.yaml` | [references/ecosystems/haskell.md](references/ecosystems/haskell.md) |
+| `mix.exs` | [references/ecosystems/elixir.md](references/ecosystems/elixir.md) |
+| `*.rockspec` | [references/ecosystems/lua.md](references/ecosystems/lua.md) |
+| `*.sh`, `*.bash` with none of the above | [references/ecosystems/shell.md](references/ecosystems/shell.md) |
 
-List every version-bearing file found. ALL of them will be updated in sync, including across different ecosystems coexisting in one repo (e.g. a Tauri app has `package.json` + `Cargo.toml` + `tauri.conf.json`; a C++ project may have `CMakeLists.txt` alongside `vcpkg.json`).
+All version-bearing files are updated in sync, across ecosystems (e.g. a Tauri app's `package.json` + `Cargo.toml` + `tauri.conf.json`).
 
-- **Consensus rule**: if all detected files/build-systems agree on the current version, use it. If they disagree, including within a single language (e.g. a C++ repo mid-migration with both `CMakeLists.txt` and `meson.build`), stop and ask the user which is canonical. Never silently prefer one file/build-system over another via a fixed priority order; a strict override risks updating the wrong file during a migration.
-- **Git-tag source**: if no version-bearing file is found, derive the current version from the latest git tag: `git describe --tags --abbrev=0` (strip a leading `v` for the numeric version). When a reference says the project is tag-versioned, this git-tag read is the expected **primary** mechanism, not a gap. If there is also no tag, stop and ask the user for the current version.
-- Compute the new version. **Patch increment is purely numeric**: `0.4.9` → `0.4.10`, NOT `0.5.0`. MINOR and MAJOR never change on auto-increment.
-- **Suffix/prerelease preservation**: only apply the auto-increment above when the detected version is a bare `MAJOR.MINOR.PATCH` with no suffix. When a suffix marker is present (e.g. a semver prerelease/build-metadata tag such as `-beta.1` or `+build5`, or an ecosystem-specific marker listed in its reference), stop and ask the user what the intended next version is, instead of incrementing through it. Exception: a suffix that the reference's bump-rule nuance explicitly says to preserve is kept unchanged while the numeric part is auto-incremented.
-- Validate semver format (MAJOR.MINOR.PATCH). Print the transition (e.g., `0.3.14 → 0.3.15`).
-- Record `PREV_TAG` for step 8's release notes: the tag `v{OLD_VERSION}`, if it exists (`git rev-parse -q --verify v{OLD_VERSION}`). If it doesn't exist, this is the first release — there is no `PREV_TAG`, and step 8 covers full history instead.
+- **Consensus**: `consensus: true` means every file agrees on `MAJOR.MINOR.PATCH`. Otherwise — including two build systems of one language mid-migration — ask the user which is canonical. Never pick one by a fixed priority.
+- **Git tag**: with no version file, or when every entry is `tag-versioned`, use `latest_tag` (strip a leading `v`). No tag either → ask the user for the current version.
+- **New version**: patch increment is purely numeric (`0.4.9` → `0.4.10`, not `0.5.0`); MINOR and MAJOR never change on auto-increment.
+- **Suffixes**: auto-increment only a bare `MAJOR.MINOR.PATCH`. For any suffix (`-beta.1`, `+build5`, or one a reference lists), ask the user for the next version — unless the reference says to preserve that suffix, in which case increment the numeric part and keep it.
+- Validate the result as `MAJOR.MINOR.PATCH` and print the transition (e.g. `0.3.14 → 0.3.15`).
+- Record `PREV_TAG` = `v{OLD_VERSION}` if `git rev-parse -q --verify v{OLD_VERSION}` succeeds; otherwise there is none and step 8 covers full history.
 
 ### 2. Build / check (before version update)
 
-For each tool detected in step 1, run the command in its reference's **Build/check** section, from each file's directory. Where the reference says to skip, skip. This step never bootstraps a project from scratch.
+1. Run `versions.py tools`. If `missing` is non-empty, stop and ask the user whether to install the command or skip the checks that need it. Do not substitute a different tool.
+2. For each tool, run its reference's **Build/check** from the file's directory. Where it says skip, or a build directory would have to be created first, skip.
 
-If anything fails, stop and report. The version has not been changed yet, so re-running after a fix is safe.
+If anything fails, stop and report. The version is still unchanged, so re-running after a fix is safe.
 
 ### 3. Update version in ALL detected files
 
-Use the Edit tool to update the version string in every file found in step 1, then apply each reference's **Extra update steps**, if any. Do NOT touch any other fields.
+1. Edit the version string in every version-bearing file, then apply each reference's **Extra update steps**. Touch no other field.
+2. Run `versions.py verify --expect {NEW_VERSION}`. It re-detects every file, checks that JSON/TOML/XML/plist files still parse, and that each resolved version matches `MAJOR.MINOR.PATCH` of the new version.
+3. If `passed` is false, fix the files named in `checks` and return to 2. Entries with `manual: true` are indirections the script cannot follow; confirm those by reading the file.
 
 ### 4. Update other version references
 
