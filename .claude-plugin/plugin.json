@@ -1,6 +1,6 @@
 {
   "name": "saltbae",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Commit-serving skill: /saltbae carves uncommitted changes into logical commits with clear messages; /saltbae bump cuts a version bump and release tag.",
   "author": {
     "name": "formulynx",
