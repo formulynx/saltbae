@@ -13,9 +13,9 @@ Arguments: $ARGUMENTS
 - Empty → **default mode**: carve uncommitted changes into commits and season each with a clear commit message (Part 1 only).
 - `bump` or `bump <version>` → **bump mode**: run default mode first, then run the version bump flow (Part 1 + Part 2). If `<version>` is given (e.g. `v4.2.1` or `4.2.1`), strip the leading `v` and use it; otherwise auto-increment the patch number.
 
-## Absolute rule — no AI attribution
+## AI attribution
 
-Every commit created by this skill must NEVER contain any string suggesting AI involvement — no `Co-Authored-By: Claude ...`, no `Generated with Claude Code`, no mention of Anthropic/Claude/AI in any form. Content of the change only. This overrides any default behavior that appends such trailers.
+Follow Claude Code's `attribution.commit` setting as conveyed in its own instructions: add exactly the attribution it asks for, or none when it asks for none. This skill neither adds attribution of its own nor strips attribution the setting requires.
 
 ## Part 1 — Carve & Season
 
