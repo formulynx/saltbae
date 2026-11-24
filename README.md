@@ -18,9 +18,29 @@ commits, and tags the release.
 /saltbae bump 4.2.1
 ```
 
-Commits from this skill never carry an AI-attribution string (no
-`Co-Authored-By: Claude ...`, no "Generated with Claude Code", no
-Anthropic/Claude/AI mention) — this overrides any default trailer behavior.
+## AI attribution
+
+Commits from `/saltbae` follow Claude Code's `attribution` setting. When it is
+unset, Claude Code appends its default `Co-Authored-By` trailer. An empty
+string hides the attribution, and any other string replaces it.
+
+Add `attribution` as a top-level key, next to your existing settings,
+in `~/.claude/settings.json` for all projects or in `.claude/settings.json`
+for one project:
+
+```jsonc
+{
+  "permissions": { ... },  // your existing settings stay as they are
+  "model": "...",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}
+```
+
+Mind the comma after the key that precedes `attribution`. See the
+[Claude Code settings docs](https://code.claude.com/docs/en/settings) for details.
 
 ## Install
 
